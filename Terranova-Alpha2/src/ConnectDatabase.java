@@ -53,4 +53,24 @@ public class ConnectDatabase {
 	      }
 	   
    }
+   public Statement sqlstatment() {
+	   Connection con = null;
+	      Statement stmt = null;
+
+	      
+	      try {
+	         Class.forName("org.hsqldb.jdbc.JDBCDriver");
+	         Read dir = new Read();
+	         String[] conn=dir.RFD();
+	         
+	         con = DriverManager.getConnection(conn[0],conn[1],conn[2]);
+	         stmt = con.createStatement();
+	         
+				
+	      }  catch (Exception e) {
+	         e.printStackTrace(System.out);
+	      }
+	      return stmt;
+	   
+   }
 }

@@ -61,6 +61,18 @@ public class BuscarPaciente extends JDialog {
 	/**
 	 * Initialize the contents of the frame.
 	 */
+	private JTable getTablePacientes() {
+		
+		 try {
+	    	    ConnectDatabase db = new ConnectDatabase();
+				ResultSet rs = db.sqlstatment().executeQuery("SELECT * FROM PACIENTE WHERE NOMBRE LIKE '%"+nombre.getText()+"%' AND APELLIDO LIKE '%"+apellido.getText()+"%'AND DNI LIKE '%"+dni.getText()+"%'");
+				Object[] transf = QueryToTable.getSingle().queryToTable(rs);
+				return table = new JTable(new DefaultTableModel((Vector<Vector<Object>>)transf[0], (Vector<String>)transf[1]));		
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			return table;
+	}
 	private void initialize() {
 		frmBuscarPaciente = new JFrame();
 		frmBuscarPaciente.setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
@@ -103,7 +115,7 @@ public class BuscarPaciente extends JDialog {
 		frmBuscarPaciente.getContentPane().add(label_2);
 		
 		scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 105, 615, 174);
+		scrollPane.setBounds(10, 73, 615, 206);
 		frmBuscarPaciente.getContentPane().add(scrollPane);
 
 		JButton btnBuscar = new JButton("Buscar");
@@ -111,28 +123,22 @@ public class BuscarPaciente extends JDialog {
 			public void actionPerformed(ActionEvent arg0) {
 				
 
-			      try {
-						Connection con = null;
-						Class.forName("org.hsqldb.jdbc.JDBCDriver");
-						//Levanto del archivo config.ini los datos del servidor HSQL
-						Read dir = new Read();
-				        String[] conn=dir.RFD();
-				        con = DriverManager.getConnection(conn[0], conn[1],conn[2]);
-				        Statement s = con.createStatement();
-						ResultSet rs = s.executeQuery("SELECT * FROM PACIENTE WHERE NOMBRE LIKE '%"+nombre.getText()+"%' AND APELLIDO LIKE '%"+apellido.getText()+"%'AND DNI LIKE '%"+dni.getText()+"%'");
+			     /* try {
+			    	    ConnectDatabase db = new ConnectDatabase();
+						ResultSet rs = db.sqlstatment().executeQuery("SELECT * FROM PACIENTE WHERE NOMBRE LIKE '%"+nombre.getText()+"%' AND APELLIDO LIKE '%"+apellido.getText()+"%'AND DNI LIKE '%"+dni.getText()+"%'");
 						Object[] transf = QueryToTable.getSingle().queryToTable(rs);
 						table = new JTable(new DefaultTableModel((Vector<Vector<Object>>)transf[0], (Vector<String>)transf[1]));
 						
 						
 					} catch(Exception e) {
 						e.printStackTrace();
-					}
-					scrollPane.setViewportView(table);
+					} */
+					scrollPane.setViewportView(getTablePacientes());
 	
 				
 			}
 		});
-		btnBuscar.setBounds(536, 71, 89, 23);
+		btnBuscar.setBounds(536, 11, 89, 52);
 		frmBuscarPaciente.getContentPane().add(btnBuscar);
 		
 		JButton btnGet = new JButton("Continuar");

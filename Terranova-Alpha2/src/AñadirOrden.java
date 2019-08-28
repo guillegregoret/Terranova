@@ -12,6 +12,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.awt.event.ActionEvent;
 import java.awt.Window.Type;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.awt.Dialog.ModalExclusionType;
 
 public class AñadirOrden {
 
@@ -55,6 +61,8 @@ public class AñadirOrden {
 	private void initialize() {
 		//UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		frame = new JFrame();
+		frame.setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
+		frame.setAlwaysOnTop(true);
 		String cod=null;
 		int sesiones=0;
 
@@ -91,22 +99,43 @@ public class AñadirOrden {
 		JButton btnAadirOrden = new JButton("A\u00F1adir Orden");
 		btnAadirOrden.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
+				
 				DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 				LocalDate localDate = LocalDate.now();
-			
 				ConnectDatabase db  = new ConnectDatabase();
-				db.Query("INSERT INTO orden(DNI, CODIGO, SESIONES_PEDIDAS, SESIONES_RESTANTES, FECHA) VALUES ("
+				
+				int count=0;
+				ResultSet rs3;
+				try {
+					rs3 = db.sqlstatment().executeQuery("SELECT MAX(RIGHT(UID, 6)) FROM ORDEN WHERE DNI LIKE '"+dni+"'");
+					while(rs3.next()){
+					    count = rs3.getInt("C1")+1;
+					    };
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				/*String Q = "INSERT INTO orden(DNI, UID,CODIGO, SESIONES_PEDIDAS, SESIONES_RESTANTES, FECHA) VALUES ("
+				+ "'"+dni
+				+"','"+dni+"-"+Integer.toString(count)
+				+"','"+codigo.getText()
+				+"','"+cantsesiones.getText()
+				+"','"+cantsesiones.getText()
+				+"','"+dtf.format(localDate)
+				+"');"; */
+				
+				//System.out.println(Q);
+				String UID = String.format("%06d", count);
+
+				db.Query("INSERT INTO orden(DNI, UID,CODIGO, SESIONES_PEDIDAS, SESIONES_RESTANTES, FECHA) VALUES ("
 						+ "'"+dni
+						+"','"+dni+"-"+UID
 						+"','"+codigo.getText()
 						+"','"+cantsesiones.getText()
 						+"','"+cantsesiones.getText()
 						+"','"+dtf.format(localDate)
-						+"');");
-				
+						+"');"); 
 
-
-				
 				
 			}
 		});
